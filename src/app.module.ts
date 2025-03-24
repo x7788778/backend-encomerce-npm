@@ -7,21 +7,22 @@ import { AppService } from './app.service';
 import { ConfigModule , ConfigService } from '@nestjs/config';  //基于dotenv
 import { webcrypto } from 'crypto';
 if(!globalThis.crypto){
-  globalThis.crypto = webcrypto as unknown as Crypto;
+  globalThis.crypto = webcrypto;
 }
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true , 
-      envFilePath: '.env' ,
+      isGlobal: true, 
+      envFilePath: '.env',
     }),
     TypeOrmModule.forRootAsync({
       imports:[ConfigModule],
       useFactory: async(configService : ConfigService)=> ({
-        type : configService.get<"sqlite">( 'TYPEORM_TYPE' ) , 
-        database : configService.get<string>( 'TYPEORM_DATABASE' ) , 
-        entities : [ __dirname + '/**/*.entity{.ts,.js}' ] , 
-        synchronize : configService . get<boolean> ( 'TYPEORM_SYNCHRONIZE' ) ,
+        type : configService.get<"sqlite">( 'TYPEORM_TYPE' ), 
+        database : configService.get<string>( 'TYPEORM_DATABASE' ), 
+        entities : [ __dirname + '/**/*.entity{.ts,.js}' ], 
+        synchronize : configService . get<boolean> ( 'TYPEORM_SYNCHRONIZE' ),
+        logging : configService.get<boolean>( 'TYPEORM_LOGGING') ,
       }),
       inject:[ConfigService]
     },

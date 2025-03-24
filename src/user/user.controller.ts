@@ -1,5 +1,5 @@
 // src/user/user.controller.ts
-import { Controller, Post, Body, Res, Get } from '@nestjs/common';
+import { Controller, Post, Body, Res, Get, HttpStatus, UnauthorizedException } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
@@ -14,14 +14,27 @@ export class UserController {
     return "info"
   }
 
-  @Post('register')
-  async register(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
+  // @Post('register')
+  // async register(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
+  //   try {
+  //     const user = await this.userService.register(createUserDto);
+  //     res.status(201).json({ message: '注册成功', user });
+  //   } catch (error) {
+  //     res.status(400).json({ message: error.message });
+  //   }
+  // }
+  @Post('register') 
+  async register(@Body()CreateUserDto:CreateUserDto,@Res()res: Response ) { 
     try {
-      const user = await this.userService.register(createUserDto);
-      res.status(201).json({ message: '注册成功', user });
-    } catch (error) {
-      res.status(400).json({ message: error.message });
-    }
+      const user = await this.userService.register( CreateUserDto ); 
+      res.status( HttpStatus.CREATED ).json({ message : '注册成功' , user });
+    } catch(error) {
+       if(error instanceof UnauthorizedException) {
+       res.status( HttpStatus.CONFLICT ).json({ message : error.message});
+       } else { 
+        res.status( HttpStatus.INTERNAL_SERVER_ERROR ).json({ message : '服务器错误' }); 
+      } 
+    } 
   }
 
   @Post('login')
