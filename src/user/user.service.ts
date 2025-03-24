@@ -14,7 +14,8 @@ export class UserService {
 
   async register(userData: any): Promise<User> {
     // 检查用户是否已存在
-    const existingUser = await this.userRepository.findOne({ where: { email: userData.email } });
+    const existingUser = await this.userRepository.findOne({ where: { username: userData.username } });
+    console.log(userData,existingUser,'register')
     if (existingUser) {
       throw new Error('用户已存在');
     }
@@ -24,14 +25,14 @@ export class UserService {
 
     // 创建新用户
     const newUser = this.userRepository.create({
-      email: userData.email,
+      username: userData.username,
       password: hashedPassword,
     });
 
     return await this.userRepository.save(newUser);
   }
 
-  async findOne(email: string): Promise<User> {
-    return await this.userRepository.findOne({ where: { email } });
+  async findOne(username: string): Promise<User> {
+    return await this.userRepository.findOne({ where: { username } });
   }
 }

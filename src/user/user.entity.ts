@@ -7,7 +7,7 @@ export class User {
   id: number;
 
   @Column({ unique: true })
-  email: string;
+  username: string;
 
   @Column()
   password: string; // 注意：实际项目中应对密码进行加密存储
