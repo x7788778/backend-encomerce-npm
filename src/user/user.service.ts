@@ -39,7 +39,7 @@ export class UserService {
   }
 
   // 验证密码
-  async validateUser(username: string, password: string): Promise<Omit<User,'password'>|null> {
+  async validateUser(username: string, password: string): Promise<Omit<User, 'password'> | null> {
     const user = await this.findOne(username);
     if (user && (await bcrypt.compare(password, user.password))) {
       // 密码匹配，返回用户信息（去掉密码）

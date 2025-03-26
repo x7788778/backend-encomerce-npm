@@ -39,8 +39,8 @@ let UserController = class UserController {
         }
     }
     async login(body, res) {
-        const { email, password } = body;
-        const user = await this.userService.findOne(email);
+        const { username, password } = body;
+        const user = await this.userService.findOne(username);
         if (!user) {
             return res.status(401).json({ message: '用户不存在或密码错误' });
         }

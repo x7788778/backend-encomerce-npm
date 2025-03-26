@@ -52,3 +52,7 @@ Omit<T, K>	排除指定属性后的新类型	Omit<User, 'password'>
 方法	作用	示例
 Logger	内置日志工具	private readonly logger = new Logger('App')
 Version()	定义API版本	@Version('1') @Get()
+
+## jwt
+相关依赖
+```npm install @nestjs/jwt passport-jwt passport```

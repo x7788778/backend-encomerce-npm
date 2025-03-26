@@ -7,7 +7,7 @@ export declare class UserController {
     info(): string;
     register(CreateUserDto: CreateUserDto, res: Response): Promise<void>;
     login(body: {
-        email: string;
+        username: string;
         password: string;
     }, res: Response): Promise<Response<any, Record<string, any>>>;
 }
