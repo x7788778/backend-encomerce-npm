@@ -12,6 +12,7 @@ if (!globalThis.crypto) {
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthModule } from './auth/auth.module';
+import { ProductModule } from './product/product.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -40,7 +41,8 @@ import { AuthModule } from './auth/auth.module';
     }),
     PassportModule,
     UserModule,
-    AuthModule // 导入 AuthModule
+    AuthModule,
+    ProductModule
   ],
   controllers: [AppController],
   providers: [AppService],
