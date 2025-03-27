@@ -2,6 +2,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ConfigService } from '@nestjs/config';
 import { Repository } from 'typeorm';
 import { User } from '../user/user.entity';
 import * as bcrypt from 'bcrypt';
@@ -12,6 +13,7 @@ export class AuthService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   // 注册用户
@@ -36,8 +38,12 @@ export class AuthService {
   // 用户登录并生成 JWT
   async login(user: User): Promise<{ access_token: string }> {
     const payload = { username: user.username, sub: user.id };
+    const expiresIn = this.configService.get<string>('JWT_EXPIRES_IN');
+    console.log('JWT_EXPIRES_IN:', expiresIn); // 添加日志
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(payload, {
+        expiresIn: '36000s', // 强制10小时
+      }),
     };
   }
 

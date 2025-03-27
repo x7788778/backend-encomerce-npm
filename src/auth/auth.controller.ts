@@ -1,9 +1,9 @@
 // src/auth/auth.controller.ts
-import { Controller, Post, Body, Res, HttpStatus, UnauthorizedException } from '@nestjs/common';
+import { Controller,Get,UseGuards,Request, Post, Body, Res, HttpStatus, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { CreateUserDto } from '../user/dto/create-user.dto';
-
+import { JwtAuthGuard } from './jwt-auth.guard';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -35,5 +35,16 @@ export class AuthController {
 
     const token = await this.authService.login(user);
     res.status(HttpStatus.OK).json({ access_token: token.access_token });
+  }
+
+  @UseGuards(JwtAuthGuard) 
+  @Get('me') 
+  getProfile(@Request() req): { userId: any; username: string } {
+    console.log('Request object:', req); // 添加日志检查整个请求对象
+    console.log('Decoded JWT payload:', req.user); // 添加日志检查解析的用户信息
+    if (!req.user) {
+      throw new UnauthorizedException('用户信息未找到');
+    }
+    return { userId: req.user.userId, username: req.user.username };
   }
 }
