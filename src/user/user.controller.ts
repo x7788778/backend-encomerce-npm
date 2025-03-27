@@ -5,10 +5,13 @@ import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { Response } from 'express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-
+import { RedisTestService } from '../redis-test.service';
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly RedisTestService: RedisTestService
+  ) {}
 
   @Get("info")
   info():string{
@@ -63,4 +66,9 @@ export class UserController {
      const user = req.user ; // 由 JwtAuthGuard 提供 
      res.status( HttpStatus.OK ).json( { user } ) ; 
     }
+
+  @Get('redis-test')
+  async testRedis() {
+    return this.RedisTestService.testConnection();
+  }
 }

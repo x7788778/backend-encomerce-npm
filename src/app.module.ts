@@ -13,6 +13,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthModule } from './auth/auth.module';
 import { ProductModule } from './product/product.module';
+import { RedisModule, RedisModuleOptions } from '@nestjs-modules/ioredis' ;
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -38,6 +39,12 @@ import { ProductModule } from './product/product.module';
         signOptions: { expiresIn: '36000s' }, // 硬编码10小时
       }),
       inject: [ConfigService],
+    }),
+    RedisModule.forRootAsync ( {
+       useFactory: (): RedisModuleOptions => ({ 
+          type: 'single',
+          url: 'redis://localhost:6379',
+      }),
     }),
     PassportModule,
     UserModule,
