@@ -37,9 +37,22 @@ export class AuthService {
 
   // 用户登录并生成 JWT
   async login(user: User): Promise<{ access_token: string }> {
-    const payload = { username: user.username, sub: user.id };
+    const { username , password } = user ;
+    
     const expiresIn = this.configService.get<string>('JWT_EXPIRES_IN');
     console.log('JWT_EXPIRES_IN:', expiresIn); // 添加日志
+    
+    // 查找用户 
+    const dbuser = await this.userRepository.findOne( { where : { username } } ) ; 
+    if ( !dbuser ) {
+      throw new UnauthorizedException({ message : 'User not found'}); 
+    }
+      // 验证密码
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException({ message: 'Invalid password' });
+    }
+    const payload = { username: user.username, sub: user.id };
     return {
       access_token: this.jwtService.sign(payload, {
         expiresIn: '36000s', // 强制10小时
