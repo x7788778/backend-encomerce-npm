@@ -36,26 +36,43 @@ export class AuthService {
   }
 
   // 用户登录并生成 JWT
-  async login(user: User): Promise<{ access_token: string }> {
-    const { username , password } = user ;
-    
+  async login(credentials: { username: string; password: string,id:number }): Promise<{ access_token: string }> {
+    const { username, password ,id} = credentials;
+    console.log('Raw credentials:', credentials);
     const expiresIn = this.configService.get<string>('JWT_EXPIRES_IN');
-    console.log('JWT_EXPIRES_IN:', expiresIn); // 添加日志
-    
-    // 查找用户 
-    const dbuser = await this.userRepository.findOne( { where : { username } } ) ; 
-    if ( !dbuser ) {
-      throw new UnauthorizedException({ message : 'User not found'}); 
-    }
-      // 验证密码
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      throw new UnauthorizedException({ message: 'Invalid password' });
-    }
-    const payload = { username: user.username, sub: user.id };
+    console.log('JWT_EXPIRES_IN:', ); // 添加日志
+
+    // // 查找用户
+    // const dbuser = await this.userRepository.findOne({ where: { username } });
+    // if (!dbuser) {
+    //   throw new UnauthorizedException({ message: 'User not found' });
+    // }
+
+    // // 验证密码
+    // console.log('Raw input password:', password);
+    // console.log('Stored hashed password:', dbuser.password);
+    // const isPasswordValid = await bcrypt.compare(password, dbuser.password);
+    // console.log('isPasswordValid:', isPasswordValid);
+
+    // if (!isPasswordValid) {
+    //   // 额外调试：尝试同步比较
+    //   const syncValid = bcrypt.compareSync(password, dbuser.password);
+    //   console.log('Sync compare result:', syncValid);
+    //   throw new UnauthorizedException({ 
+    //     message: 'Invalid password',
+    //     debug: {
+    //       inputPassword: password,
+    //       storedHash: dbuser.password,
+    //       asyncCompare: isPasswordValid,
+    //       syncCompare: syncValid
+    //     }
+    //   });
+    // }
+
+    const payload = { username: username, sub: id };
     return {
       access_token: this.jwtService.sign(payload, {
-        expiresIn: '36000s', // 强制10小时
+        expiresIn: expiresIn,
       }),
     };
   }
@@ -65,6 +82,7 @@ export class AuthService {
     const user = await this.userRepository.findOne({ where: { username } });
     if (user && (await bcrypt.compare(password, user.password))) {
       const {  ...result } = user;
+      // console.log('validateUser:', result);
       return result;
     }
     return null;
