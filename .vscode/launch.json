@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "node",
+        "request": "launch",
+        "name": "Debug NestJS App",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": ["run", "start:dev"],  // 确保是 start:dev 而不是 test
+        "skipFiles": ["<node_internals>/**"],
+        "console": "integratedTerminal",
+        "sourceMaps": true,
+        "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+        "resolveSourceMapLocations": ["${workspaceFolder}/**", "!**/node_modules/**"],
+        "restart": true // 可选，自动重启
+      }
+    ]
+  }
