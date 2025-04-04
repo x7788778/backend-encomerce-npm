@@ -14,6 +14,8 @@ import { PassportModule } from '@nestjs/passport';
 import { AuthModule } from './auth/auth.module';
 import { ProductModule } from './product/product.module';
 import { RedisModule, RedisModuleOptions } from '@nestjs-modules/ioredis' ;
+import { RabbitExampleModule } from './rabbit/rabbit.module';
+import { ConsumersModule } from './consumers/consumers.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -49,7 +51,9 @@ import { RedisModule, RedisModuleOptions } from '@nestjs-modules/ioredis' ;
     PassportModule,
     UserModule,
     AuthModule,
-    ProductModule
+    ProductModule,
+    RabbitExampleModule,
+    ConsumersModule
   ],
   controllers: [AppController],
   providers: [AppService],
