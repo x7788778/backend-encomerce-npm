@@ -29,3 +29,9 @@ fanout：广播消息到所有绑定的队列
 -nack：
 如果消费者无法处理消息，可以发送一个 nack（negative acknowledgment）或 reject。
 RabbitMQ 可以根据配置决定是否将消息重新放回
+
+
+
+## 优化相关
+
+索引优化

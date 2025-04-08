@@ -16,6 +16,8 @@ import { ProductModule } from './product/product.module';
 import { RedisModule, RedisModuleOptions } from '@nestjs-modules/ioredis' ;
 import { RabbitExampleModule } from './rabbit/rabbit.module';
 import { ConsumersModule } from './consumers/consumers.module';
+import { OrderModule } from './order/order.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -30,6 +32,7 @@ import { ConsumersModule } from './consumers/consumers.module';
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: configService.get<boolean>('TYPEORM_SYNCHRONIZE'),
         logging: configService.get<boolean>('TYPEORM_LOGGING'),
+        
       }),
       inject: [ConfigService]
     },
@@ -53,7 +56,8 @@ import { ConsumersModule } from './consumers/consumers.module';
     AuthModule,
     ProductModule,
     RabbitExampleModule,
-    ConsumersModule
+    ConsumersModule,
+    OrderModule
   ],
   controllers: [AppController],
   providers: [AppService],

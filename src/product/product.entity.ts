@@ -1,11 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
-
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, Index } from 'typeorm';
+import { Order } from '../order/order.entity';
 @Entity()
 export class Product {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ nullable: false })
+  @Index()
   name: string;
 
   @Column({ nullable: false })
@@ -16,4 +17,7 @@ export class Product {
 
   @Column({ nullable: false })
   stock: number;
+
+  @OneToMany(() => Order, order => order.product)
+  orders: Order[];
 }
