@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { Order } from './order.entity';
 import { User } from '../user/user.entity';
 import { Product } from '../product/product.entity';
+import { MessagingService } from '../rabbit/rabbit.service';
 
 @Injectable()
 export class OrderService {
@@ -12,6 +13,7 @@ export class OrderService {
     @InjectRepository(Order) private readonly orderRepository: Repository<Order>,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(Product) private readonly productRepository: Repository<Product>,
+    private readonly messagingService: MessagingService,
   ) {}
 
   async createOrder(userId: number, productId: number, quantity: number): Promise<Order> {
@@ -37,10 +39,21 @@ export class OrderService {
       totalPrice,
     });
 
-    product.stock -= quantity;
-    await this.productRepository.save(product);
+    // product.stock -= quantity; 
+    // await this.productRepository.save(product);// 更新库存
 
-    return this.orderRepository.save(newOrder);
+    // return this.orderRepository.save(newOrder); // 保存订单
+    this.messagingService.publish('orders_exchange', 'orders_created', newOrder as any);
+    return newOrder;
+
+  }
+  //此方法由消息队列调用
+  async saveOrderToDatabase(order: Order): Promise<void> {
+    console.log('Saving order to database:', order);
+
+    order.product.stock -= order.quantity; // 更新库存
+    await this.productRepository.save(order.product);// 更新库存
+    await this.orderRepository.save(order);// 保存订单
   }
 
   async getOrderById(id: number): Promise<Order> {

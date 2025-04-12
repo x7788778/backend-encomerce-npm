@@ -12,6 +12,7 @@ import { RedisModule } from '@nestjs-modules/ioredis';
     TypeOrmModule.forFeature([Order,User,Product]),
   ],
   providers: [OrderService],
-  controllers: [OrderController]
+  controllers: [OrderController],
+  exports: [OrderService, TypeOrmModule,OrderModule],
 })
 export class OrderModule {}
