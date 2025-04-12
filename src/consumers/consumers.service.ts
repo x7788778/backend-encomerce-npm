@@ -1,9 +1,14 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { RabbitRPC, AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-
+// import { ProductService } from '../product/product.service';
+import { OrderService } from '../order/order.service';
 @Injectable()
 export class ProductConsumersService {
-    constructor(private readonly amqpConnection: AmqpConnection) { }
+    constructor(
+        private readonly amqpConnection: AmqpConnection,
+        private readonly orderService: OrderService,
+
+    ) { }
     async onModuleInit() {
         if (this.amqpConnection.connected) {
             console.log('RabbitMQ connection established');
@@ -32,5 +37,16 @@ export class ProductConsumersService {
         return { status: 'success', data: message };
     }
 
+    @RabbitRPC({
+        exchange: 'orders_exchange',
+        routingKey: 'orders_created',
+        queue: 'orders_created'
+    })
+    async handleOrderCreation(message: any) {
+        console.log('Received order creation message:', message);
+        this.orderService.saveOrderToDatabase(message);
+        // 处理订单创建消息
+        return { status: 'success', data: message };
+    }
 
 }

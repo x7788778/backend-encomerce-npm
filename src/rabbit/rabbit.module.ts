@@ -10,7 +10,18 @@ import { MessagingService } from "./rabbit.service";
           name: "products_exchange",
           type: "topic",
           createExchangeIfNotExists: true,
+        },
+        {
+          name: "orders_exchange",
+          type: "direct",
+          createExchangeIfNotExists: true,
         }
+      ],
+      queues: [
+        {
+          name: 'orders_created',
+          options: { durable: true },
+        },
       ],
       uri: "amqp://guest:guest@127.0.0.1:5672",
       enableControllerDiscovery: true,
