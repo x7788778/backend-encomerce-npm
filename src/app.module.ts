@@ -27,11 +27,20 @@ import { OrderModule } from './order/order.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        type: configService.get<"sqlite">('TYPEORM_TYPE'),
+        type: configService.get<'postgres'>('TYPEORM_TYPE'),
+        host: configService.get<string>('TYPEORM_HOST'),
+        port: configService.get<number>('TYPEORM_PORT'),
+        username: configService.get<string>('TYPEORM_USERNAME'),
+        password: configService.get<string>('TYPEORM_PASSWORD'),
         database: configService.get<string>('TYPEORM_DATABASE'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: configService.get<boolean>('TYPEORM_SYNCHRONIZE'),
         logging: configService.get<boolean>('TYPEORM_LOGGING'),
+        migrations: [__dirname + '/migrations/*.ts'], // 迁移脚本路径
+        cli: {
+          migrationsDir: 'src/migrations' // CLI 生成迁移脚本的目录
+        },
+        migrationsRun: true // 自动运行未执行的迁移脚本
         
       }),
       inject: [ConfigService]

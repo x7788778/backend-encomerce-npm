@@ -1,4 +1,3 @@
-// src/order/order.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { User } from '../user/user.entity';
 import { Product } from '../product/product.entity';
@@ -13,24 +12,25 @@ export class Order {
 
   @ManyToOne(() => Product, product => product.orders)
   product: Product;
-  //商品
+  // 商品
 
-  @Column({ type: 'int' })
+  @Column({ type: 'integer' })
   quantity: number;
-  //购买数量
+  // 购买数量
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  @Column({ type: 'numeric', precision: 10, scale: 2 })
   totalPrice: number;
-  //总价
+  // 总价
 
-  @Column({ 
-    type: 'text', 
-    enum: ['pending', 'paid', 'shipped', 'completed', 'cancelled'], 
-    default: 'pending' 
+  @Column({
+    type: 'enum',
+    enum: ['pending', 'paid', 'shipped', 'completed', 'cancelled'],
+    default: 'pending'
   })
   status: string;
-  //订单状态
+  // 订单状态
 
-  @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'timestamp with time zone', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 }
+    
