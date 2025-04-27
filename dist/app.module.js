@@ -7,19 +7,27 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
+// src/app.module.ts
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const user_module_1 = require("./user/user.module");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
-const config_1 = require("@nestjs/config");
+const config_1 = require("@nestjs/config"); //基于dotenv
 const crypto_1 = require("crypto");
 if (!globalThis.crypto) {
     globalThis.crypto = crypto_1.webcrypto;
 }
-let AppModule = class AppModule {
+const jwt_1 = require("@nestjs/jwt");
+const passport_1 = require("@nestjs/passport");
+const auth_module_1 = require("./auth/auth.module");
+const product_module_1 = require("./product/product.module");
+const ioredis_1 = require("@nestjs-modules/ioredis");
+const rabbit_module_1 = require("./rabbit/rabbit.module");
+const consumers_module_1 = require("./consumers/consumers.module");
+const order_module_1 = require("./order/order.module");
+let AppModule = exports.AppModule = class AppModule {
 };
-exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
@@ -31,14 +39,43 @@ exports.AppModule = AppModule = __decorate([
                 imports: [config_1.ConfigModule],
                 useFactory: async (configService) => ({
                     type: configService.get('TYPEORM_TYPE'),
+                    host: configService.get('TYPEORM_HOST'),
+                    port: configService.get('TYPEORM_PORT'),
+                    username: configService.get('TYPEORM_USERNAME'),
+                    password: configService.get('TYPEORM_PASSWORD'),
                     database: configService.get('TYPEORM_DATABASE'),
                     entities: [__dirname + '/**/*.entity{.ts,.js}'],
                     synchronize: configService.get('TYPEORM_SYNCHRONIZE'),
                     logging: configService.get('TYPEORM_LOGGING'),
+                    migrations: [__dirname + '/migrations/*.ts'],
+                    cli: {
+                        migrationsDir: 'src/migrations' // CLI 生成迁移脚本的目录
+                    },
+                    migrationsRun: true // 自动运行未执行的迁移脚本
                 }),
                 inject: [config_1.ConfigService]
             }),
+            jwt_1.JwtModule.registerAsync({
+                imports: [config_1.ConfigModule],
+                useFactory: async (configService) => ({
+                    secret: configService.get('JWT_SECRET'),
+                    signOptions: { expiresIn: '36000s' }, // 硬编码10小时
+                }),
+                inject: [config_1.ConfigService],
+            }),
+            ioredis_1.RedisModule.forRootAsync({
+                useFactory: () => ({
+                    type: 'single',
+                    url: 'redis://localhost:6379',
+                }),
+            }),
+            passport_1.PassportModule,
             user_module_1.UserModule,
+            auth_module_1.AuthModule,
+            product_module_1.ProductModule,
+            rabbit_module_1.RabbitExampleModule,
+            consumers_module_1.ConsumersModule,
+            order_module_1.OrderModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

@@ -1,0 +1,72 @@
+services:
+  app:
+    build: .
+    ports:
+    - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy  
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      TYPEORM_TYPE: postgres
+      TYPEORM_HOST: postgres
+      TYPEORM_PORT: 5432
+      TYPEORM_USERNAME: encommercenpm
+      TYPEORM_PASSWORD: 123456
+      TYPEORM_DATABASE: encommercedb
+      JWT_SECRET: 123456
+      REDIS_HOST: redis  # 改为使用服务名
+      REDIS_PORT: 6379
+      REDIS_URL: redis://redis:6379
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_URL: amqp://rabbitmq  # 添加RabbitMQ连接URL
+    networks:
+      - chonet
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: encommercenpm
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: encommercedb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U encommercenpm -d encommercedb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - chonet
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - chonet
+  rabbitmq:
+    image: rabbitmq:latest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - chonet
+volumes:
+  postgres_data:
+
+networks:
+  chonet:
+    external: true

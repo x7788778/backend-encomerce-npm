@@ -1,4 +1,5 @@
 import { Module, forwardRef } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ProductController } from './product.controller';
 import { ProductService } from './product.service';
 import { Product } from './product.entity';
@@ -21,7 +22,8 @@ import { ConsumersModule } from '../consumers/consumers.module';
     ProductService,
     {
       provide: 'REDIS_CLIENT',
-      useFactory: () => new Redis('redis://localhost:6379')
+      useFactory: (configService: ConfigService) => new Redis(configService.get('REDIS_URL')),
+      inject: [ConfigService]
     }
   ],
   exports: [ProductService, TypeOrmModule, 'REDIS_CLIENT']

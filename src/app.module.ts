@@ -54,11 +54,30 @@ import { OrderModule } from './order/order.module';
       }),
       inject: [ConfigService],
     }),
-    RedisModule.forRootAsync ( {
-       useFactory: (): RedisModuleOptions => ({ 
-          type: 'single',
-          url: 'redis://localhost:6379',
+    RedisModule.forRootAsync({
+      useFactory: (configService: ConfigService): RedisModuleOptions => ({
+        type: 'single',
+        url: configService.get('REDIS_URL'),
+        options: {
+          retryStrategy: (times) => {
+            const delay = Math.min(times * 1000, 10000);
+            console.log(`Redis连接失败，第${times}次重试...`);
+            return delay;
+          },
+          maxRetriesPerRequest: null, // 无限重试
+          connectTimeout: 30000, // 30秒连接超时
+          reconnectOnError: (err) => {
+            console.error('Redis连接错误:', err.message);
+            return true;
+          },
+          enableReadyCheck: true,
+          autoResendUnfulfilledCommands: true,
+          enableOfflineQueue: true, // 启用离线队列
+          commandTimeout: 5000, // 命令超时5秒
+          keepAlive: 10000 // 10秒保持连接
+        },
       }),
+      inject: [ConfigService]
     }),
     PassportModule,
     UserModule,

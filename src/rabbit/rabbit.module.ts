@@ -23,9 +23,14 @@ import { MessagingService } from "./rabbit.service";
           options: { durable: true },
         },
       ],
-      uri: "amqp://guest:guest@127.0.0.1:5672",
+      uri: "amqp://rabbitmq",
       enableControllerDiscovery: true,
-      connectionInitOptions: { wait: true },
+      connectionInitOptions: { 
+        timeout: 15000,
+        reject: false
+      },
+      defaultRpcTimeout: 30000,
+      
     }),
   ],
   providers: [MessagingService],

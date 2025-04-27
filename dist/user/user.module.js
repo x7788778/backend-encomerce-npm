@@ -12,15 +12,15 @@ const user_service_1 = require("./user.service");
 const user_controller_1 = require("./user.controller");
 const typeorm_1 = require("@nestjs/typeorm");
 const user_entity_1 = require("./user.entity");
-let UserModule = class UserModule {
+const redis_test_service_1 = require("../redis-test.service");
+let UserModule = exports.UserModule = class UserModule {
 };
-exports.UserModule = UserModule;
 exports.UserModule = UserModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.User])],
-        providers: [user_service_1.UserService],
+        providers: [user_service_1.UserService, redis_test_service_1.RedisTestService],
         controllers: [user_controller_1.UserController],
-        exports: [user_service_1.UserService],
+        exports: [user_service_1.UserService, typeorm_1.TypeOrmModule], // 如果其他模块需要使用UserService，可以导出
     })
 ], UserModule);
 //# sourceMappingURL=user.module.js.map
